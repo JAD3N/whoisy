@@ -18,7 +18,6 @@ async function main(): Promise<void> {
 	await esbuild.build(getConfig("cjs"));
 	await esbuild.build(getConfig("esm"));
 }
-console.log('run!');
 
 if (require.main === module) {
 	main();
