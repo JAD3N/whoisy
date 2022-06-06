@@ -1,10 +1,10 @@
 {
 	"name": "whoisy",
-	"version": "1.0.0",
-	"private": true,
+	"version": "0.0.1",
 	"description": "",
 	"keywords": [
-		"whois"
+		"whois",
+		"whoisy"
 	],
 	"homepage": "https://github.com/jad3n/whoisy",
 	"bugs": "https://github.com/jad3n/whoisy/issues",
