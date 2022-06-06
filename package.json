@@ -6,10 +6,10 @@
 	"keywords": [
 		"whois"
 	],
-	"homepage": "https://github.com/birdmarketing/whoisy",
-	"bugs": "https://github.com/birdmarketing/whoisy/issues",
+	"homepage": "https://github.com/jad3n/whoisy",
+	"bugs": "https://github.com/jad3n/whoisy/issues",
 	"author": "Jaden Buchan <me@jaden.bio>",
-	"repository": "birdmarketing/whoisy",
+	"repository": "jad3n/whoisy",
 	"main": "./build/cjs/index.js",
 	"module": "./build/esm/index.js",
 	"types": "./build/index.d.ts",

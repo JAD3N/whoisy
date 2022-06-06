@@ -1,7 +1,7 @@
 import net from "net";
 
 async function getAllTlds(): Promise<string[]> {
-	const { default: fetch } = await import('node-fetch');
+	const { default: fetch } = await import("node-fetch");
 	const res = await fetch(
 		"https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
 	).then((res) => res.text());
@@ -50,7 +50,6 @@ function query({
 
 	console.log("res", res);
 })();
-
 
 /*
 
