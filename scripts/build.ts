@@ -11,6 +11,7 @@ function getConfig(format: "cjs" | "esm"): esbuild.BuildOptions {
 		external: [],
 		outdir: path.join(__dirname, `../build/${format}`),
 		entryPoints: [path.join(__dirname, "../src/index.ts")],
+		bundle: true,
 	};
 }
 

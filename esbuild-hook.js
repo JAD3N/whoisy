@@ -29,7 +29,6 @@ sourceMapSupport.install({
 	},
 });
 
-
 const defaultLoader = Module._extensions[".js"];
 
 Module._extensions[".ts"] = function (mod, filename) {
