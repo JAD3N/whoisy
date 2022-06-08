@@ -1,5 +1,6 @@
 import { parse as parseDate } from "date-fns";
 import ipRegex from 'ip-regex';
+import { sortBy } from 'lodash';
 
 import { register, WhoisParser } from "./registry";
 import { Contact } from "../contact";
@@ -73,14 +74,14 @@ const extraFields: Record<string, keyof WhoisRecord> = {
 };
 
 const parse: WhoisParser = (raw: string): WhoisRecord | null => {
-	const record: WhoisRecord = { raw, customFields: {} };
-
 	// check if any results
 	if (raw.includes("returned 0 objects") || raw.includes("No match found")) {
-		return record;
+		return null;
 	}
 
+	const record: WhoisRecord = { raw, customFields: {} };
 	const groups = getGroups(raw);
+
 	for (const group of groups) {
 		if (group.contact || group.organization || group.organisation) {
 			const contact: Contact = {};
@@ -125,9 +126,11 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 						} else if (ipRegex.v6({ exact: true }).test(part)) {
 							nsArr.push({ type: 'ipv6', value: part });
 						} else {
-							nsArr.push({ type: 'hostname', value: part });
+							nsArr.push({ type: 'hostname', value: part.toLowerCase() });
 						}
 					}
+
+					record.nameservers = sortBy(record.nameservers, 'type');
 				} else if (record.customFields) {
 					// record.customFields[key] = value;
 					if (key in record.customFields) {

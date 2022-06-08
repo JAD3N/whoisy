@@ -64,15 +64,27 @@ export class Client {
 				timeout,
 			});
 
-			// const regex = /whois:\s+(.*)/gi;
-			// const whois = regex.exec(res);
-
-			// if (whois)
 			const record = parse("whois.iana.org", res);
+
+			if (!record) {
+				throw new Error(`No record found for ${domain}`);
+			} else if (!record?.domainName || !record?.whoisServer) {
+				throw new Error(`TLD for "${domain}" not supported`);
+			}
+
+			host = record.whoisServer;
+		}
+
+		while (host) {
+			const res = await this.query({
+				host,
+				query: domain,
+				timeout,
+			});
+
+			const record = parse(host, res);
 			console.log('record', record);
-			// if (!data.domain || !data.whois) {
-			// 	throw new Error(`TLD for "${domain}" not supported`);
-			// }
+			break;
 		}
 	}
 }

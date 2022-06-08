@@ -15,4 +15,4 @@ export async function getAllTlds(): Promise<string[]> {
 }
 
 const client = new Client();
-client.lookup('google.com');
+client.lookup('birdmarketing.co.uk', { host: 'whois.nic.uk' });
