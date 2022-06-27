@@ -1,6 +1,7 @@
 import net from "net";
 import punycode from "punycode/";
 import { parse } from "./parsers";
+import { WhoisRecord } from "./record";
 
 export type Tld = string;
 export type WhoisServer = string;
@@ -36,7 +37,7 @@ export class Client {
 
 			socket.setTimeout(timeout);
 			socket.on("data", (chunk) => (data += chunk));
-			socket.on("close", () => resolve(data.replace(/\r\n/g, '\n')));
+			socket.on("close", () => resolve(data.replace(/\r\n/g, "\n")));
 			socket.on("timeout", () => socket.destroy(new Error("Timeout")));
 			socket.on("error", reject);
 		});
@@ -49,7 +50,7 @@ export class Client {
 			timeout,
 			depth = 1,
 		}: { host?: string; timeout?: number; depth?: number } = {}
-	): Promise<any> {
+	): Promise<WhoisRecord | null> {
 		domain = punycode.toASCII(domain);
 		const domainTld = domain.slice(domain.lastIndexOf(".") + 1);
 
@@ -65,22 +66,31 @@ export class Client {
 			});
 
 			const record = parse("whois.iana.org", res);
-			host = record?.whoisServer;
+			if (!record) {
+				throw new Error(`No record found for ${domain}`);
+			} else if (!record?.whoisServer) {
+				throw new Error(`TLD for "${domain}" not supported`);
+			}
+
+			host = record.whoisServer;
 		}
 
 		if (!host) {
 			throw new Error("No whois server found");
 		}
 
-		let result = {};
-
+		let result: WhoisRecord | null = null;
 		let i = 0;
+
 		while (host && i < depth) {
-			const record = parse(host, await this.query({
+			const record = parse(
 				host,
-				query: domain,
-				timeout,
-			}));
+				await this.query({
+					host,
+					query: domain,
+					timeout,
+				})
+			);
 
 			if (record?.whoisServer) {
 				host = record.whoisServer;
@@ -89,12 +99,12 @@ export class Client {
 			}
 
 			if (record) {
-				result = { ...result, ...record };
+				result = { ...(result ?? {}), ...record };
 			}
 
 			i++;
 		}
 
-		console.log('result', result);
+		return result;
 	}
 }

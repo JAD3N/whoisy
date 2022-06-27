@@ -15,4 +15,4 @@ export async function getAllTlds(): Promise<string[]> {
 }
 
 const client = new Client();
-client.lookup("google.co.uk");
+client.lookup("google.co.uk").then((record) => console.log("record", record));

@@ -1,4 +1,4 @@
-import psl from 'psl';
+import psl from "psl";
 import ipRegex from "ip-regex";
 
 import { register, WhoisParser } from "./registry";
@@ -95,7 +95,6 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 			record.customFields!.registrarOrganization = "Nominet UK";
 			record.customFields!.registrarURL = "http://www.nic.uk/";
 		}
-		console.log("content", content);
 	}
 
 	const domain = getGroup(raw, /\s+Domain name:\s+(.+?)\n/);

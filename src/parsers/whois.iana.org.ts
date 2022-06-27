@@ -1,5 +1,5 @@
 import { parse as parseDate } from "date-fns";
-import ipRegex from 'ip-regex';
+import ipRegex from "ip-regex";
 
 import { register, WhoisParser } from "./registry";
 import { Contact } from "../contact";
@@ -73,14 +73,14 @@ const extraFields: Record<string, keyof WhoisRecord> = {
 };
 
 const parse: WhoisParser = (raw: string): WhoisRecord | null => {
-	const record: WhoisRecord = { raw, customFields: {} };
-
 	// check if any results
 	if (raw.includes("returned 0 objects") || raw.includes("No match found")) {
 		return null;
 	}
 
+	const record: WhoisRecord = { raw, customFields: {} };
 	const groups = getGroups(raw);
+
 	for (const group of groups) {
 		if (group.contact || group.organization || group.organisation) {
 			const contact: Contact = {};
@@ -94,11 +94,14 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 				}
 			}
 
-			if (group.contact === 'administrative') {
+			if (group.contact === "administrative") {
 				record.admin = contact;
-			} else if (group.contact === 'technical') {
+			} else if (group.contact === "technical") {
 				record.tech = contact;
-			} else if (!group.contact && (group.organization || group.organisation)) {
+			} else if (
+				!group.contact &&
+				(group.organization || group.organisation)
+			) {
 				record.registrant = contact;
 			}
 		} else {
@@ -111,8 +114,13 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 					const newKey = extraFields[key];
 					Reflect.set(record, newKey, value);
 				} else if (key === "nserver") {
-					const nameservers = Array.isArray(value) ? value.join(' ') : value;
-					const parts = nameservers.split(' ').map(part => part.trim()).filter(part => !!part);
+					const nameservers = Array.isArray(value)
+						? value.join(" ")
+						: value;
+					const parts = nameservers
+						.split(" ")
+						.map((part) => part.trim())
+						.filter((part) => !!part);
 
 					if (!record.nameservers) {
 						record.nameservers = [];
@@ -121,11 +129,14 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 					const nsArr = record.nameservers;
 					for (const part of parts) {
 						if (ipRegex.v4({ exact: true }).test(part)) {
-							nsArr.push({ type: 'ipv4', value: part });
+							nsArr.push({ type: "ipv4", value: part });
 						} else if (ipRegex.v6({ exact: true }).test(part)) {
-							nsArr.push({ type: 'ipv6', value: part });
+							nsArr.push({ type: "ipv6", value: part });
 						} else {
-							nsArr.push({ type: 'hostname', value: part });
+							nsArr.push({
+								type: "hostname",
+								value: part.toLowerCase(),
+							});
 						}
 					}
 				} else if (record.customFields) {
