@@ -36,7 +36,7 @@ export class Client {
 
 			socket.setTimeout(timeout);
 			socket.on("data", (chunk) => (data += chunk));
-			socket.on("close", () => resolve(data));
+			socket.on("close", () => resolve(data.replace(/\r\n/g, '\n')));
 			socket.on("timeout", () => socket.destroy(new Error("Timeout")));
 			socket.on("error", reject);
 		});
@@ -47,7 +47,7 @@ export class Client {
 		{
 			host,
 			timeout,
-			depth = 2,
+			depth = 1,
 		}: { host?: string; timeout?: number; depth?: number } = {}
 	): Promise<any> {
 		domain = punycode.toASCII(domain);
@@ -64,15 +64,37 @@ export class Client {
 				timeout,
 			});
 
-			// const regex = /whois:\s+(.*)/gi;
-			// const whois = regex.exec(res);
-
-			// if (whois)
 			const record = parse("whois.iana.org", res);
-			console.log('record', record);
-			// if (!data.domain || !data.whois) {
-			// 	throw new Error(`TLD for "${domain}" not supported`);
-			// }
+			host = record?.whoisServer;
 		}
+
+		if (!host) {
+			throw new Error("No whois server found");
+		}
+
+		let result = {};
+
+		let i = 0;
+		while (host && i < depth) {
+			const record = parse(host, await this.query({
+				host,
+				query: domain,
+				timeout,
+			}));
+
+			if (record?.whoisServer) {
+				host = record.whoisServer;
+			} else {
+				host = undefined;
+			}
+
+			if (record) {
+				result = { ...result, ...record };
+			}
+
+			i++;
+		}
+
+		console.log('result', result);
 	}
 }

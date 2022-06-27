@@ -1,6 +1,6 @@
-import { Client } from './client';
+import { Client } from "./client";
 
-export * from './client';
+export * from "./client";
 
 export async function getAllTlds(): Promise<string[]> {
 	const { default: fetch } = await import("node-fetch");
@@ -15,4 +15,4 @@ export async function getAllTlds(): Promise<string[]> {
 }
 
 const client = new Client();
-client.lookup('google.com');
+client.lookup("google.co.uk");

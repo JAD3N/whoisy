@@ -77,7 +77,7 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 
 	// check if any results
 	if (raw.includes("returned 0 objects") || raw.includes("No match found")) {
-		return record;
+		return null;
 	}
 
 	const groups = getGroups(raw);
