@@ -14,5 +14,8 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:import/typescript",
 		"prettier"
-	]
+	],
+	"rules": {
+		"@typescript-eslint/no-non-null-assertion": "off"
+	}
 }
