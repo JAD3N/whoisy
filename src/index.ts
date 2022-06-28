@@ -1,7 +1,7 @@
 export * from "./client";
 export * from "./contact";
 export * from "./nameserver";
-export * from "./record";
+export * from "./record"
 
 export async function getAllTlds(): Promise<string[]> {
 	const { default: fetch } = await import("node-fetch");

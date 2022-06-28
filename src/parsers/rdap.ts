@@ -15,6 +15,14 @@ export function parse(raw: string): WhoisRecord | null {
 		return null;
 	}
 
+	// check if rdap has domain
+	if (
+		data.errorCode &&
+		data.title?.match?.(/domain (.+) not found in IANA bootstrap file/)
+	) {
+		return null;
+	}
+
 	const record: WhoisRecord = { raw, customFields: {} };
 
 	if (data.errorCode === 404) {

@@ -7,12 +7,15 @@ import { WhoisRecord } from "./record";
 
 export type Tld = string;
 export type WhoisServer = string;
+export type RdapServer = string;
 
 export class Client {
-	private tldCache: Map<Tld, WhoisServer>;
+	private whoisTldCache: Map<Tld, WhoisServer>;
+	private rdapTldCache: Map<Tld, RdapServer>;
 
 	public constructor() {
-		this.tldCache = new Map();
+		this.whoisTldCache = new Map();
+		this.rdapTldCache = new Map();
 	}
 
 	private whois({
@@ -46,7 +49,15 @@ export class Client {
 	}
 
 	private async rdap(domain: string): Promise<string | null> {
-		const res = await fetch(`https://rdap.org/domain/${domain}`);
+		const domainTld = domain.slice(domain.lastIndexOf(".") + 1);
+		if (!this.rdapTldCache.has(domainTld)) {
+			return null;
+		}
+
+		const res = await fetch(
+			`${this.rdapTldCache.get(domainTld)!}domain/${domain}`
+		);
+
 		if (res.ok || res.status === 404) {
 			return await res.text();
 		} else {
@@ -58,6 +69,25 @@ export class Client {
 					throw new Error("Rate limit exceeded");
 				default:
 					throw new Error("Request failed");
+			}
+		}
+	}
+
+	public async updateRdapCache(): Promise<void> {
+		const res = await fetch("https://data.iana.org/rdap/dns.json");
+		const data = (await res.json()) as {
+			description: string;
+			publication: string;
+			services: [string[], [string]][];
+		};
+
+		this.rdapTldCache.clear();
+
+		for (const [tlds, providers] of data.services) {
+			for (const provider of providers) {
+				for (const tld of tlds) {
+					this.rdapTldCache.set(tld, provider);
+				}
 			}
 		}
 	}
@@ -79,7 +109,11 @@ export class Client {
 		domain = punycode.toASCII(domain);
 		const domainTld = domain.slice(domain.lastIndexOf(".") + 1);
 
-		if (rdap) {
+		if (this.rdapTldCache.size === 0) {
+			await this.updateRdapCache();
+		}
+
+		if (rdap && this.rdapTldCache.has(domainTld)) {
 			let rdapJSON = null;
 			try {
 				rdapJSON = await this.rdap(domain);
@@ -92,8 +126,8 @@ export class Client {
 			}
 		}
 
-		if (!host && this.tldCache.has(domainTld)) {
-			host = this.tldCache.get(domainTld);
+		if (!host && this.whoisTldCache.has(domainTld)) {
+			host = this.whoisTldCache.get(domainTld);
 		}
 
 		if (!host) {
