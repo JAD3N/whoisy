@@ -1,9 +1,13 @@
 import net from "net";
 import punycode from "punycode/";
-import fetch from "node-fetch";
+import type { RequestInfo, RequestInit, Response } from "node-fetch";
 
 import { parse } from "./parsers";
 import { WhoisRecord } from "./record";
+
+const fetchPromise = import("node-fetch").then((mod) => mod.default);
+const fetch = (info: RequestInfo, init?: RequestInit): Promise<Response> =>
+	fetchPromise.then((fetch) => fetch(info, init));
 
 export type Tld = string;
 export type WhoisServer = string;
