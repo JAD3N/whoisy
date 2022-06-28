@@ -50,12 +50,11 @@ export class Client {
 
 	private async rdap(domain: string): Promise<string | null> {
 		const res = await fetch(`https://rdap.org/domain/${domain}`);
-		if (res.ok) {
+		if (res.ok || res.status === 404) {
 			return await res.text();
 		} else {
 			switch (res.status) {
 				case 400:
-				case 404:
 					// invalid domain or no service
 					return null;
 				case 429:
@@ -84,45 +83,15 @@ export class Client {
 		const domainTld = domain.slice(domain.lastIndexOf(".") + 1);
 
 		if (rdap) {
-			let rdapData = null;
+			let rdapJSON = null;
 			try {
-				rdapData = await this.rdap(domain);
+				rdapJSON = await this.rdap(domain);
 			} catch (err: unknown) {
 				console.error('RDAP Error:', err);
 			}
 
-			if (rdapData) {
-				const record: WhoisRecord = { raw: rdapData };
-				const data = JSON.parse(rdapData);
-
-				for (const event of data.events) {
-					if (event.eventAction === 'registration') {
-						record.createdDate = parseISO(event.eventDate);
-					} else if (event.eventAction === 'expiration') {
-						record.expiresDate = parseISO(event.eventDate);
-					} else if (event.eventAction === 'last changed') {
-						record.updatedDate = parseISO(event.eventDate);
-					}
-				}
-
-				const nsArr: Nameserver[] = [];
-				for (const nameserver of data.nameservers) {
-					if (nameserver.objectClassName === 'nameserver') {
-						const ns = nameserver.ldhName;
-						if (ipRegex.v4({ exact: true }).test(ns)) {
-							nsArr.push({ type: "ipv4", value: ns });
-						} else if (ipRegex.v6({ exact: true }).test(ns)) {
-							nsArr.push({ type: "ipv6", value: ns });
-						} else {
-							nsArr.push({ type: "hostname", value: ns });
-						}
-					}
-				}
-				if (nsArr.length) {
-					record.nameservers = nsArr;
-				}
-
-				return record;
+			if (rdapJSON) {
+				return parse("rdap", rdapJSON);
 			}
 		}
 

@@ -42,6 +42,7 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 
 	if (raw.match(/^Domain not found/)) {
 		record.status = "available";
+		record.domainAvailability = true;
 		return record;
 	} else {
 		record.status = "registered";
@@ -63,48 +64,48 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 		undefined;
 
 	record.registrant = {
-		name: entries['Registrant Name'] as string,
-		organization: entries['Registrant Organization'] as string,
-		street1: entries['Registrant Street'] as string,
-		city: entries['Registrant City'] as string,
-		state: entries['Registrant State/Province'] as string,
-		postalCode: entries['Registrant Postal Code'] as string,
-		countryCode: entries['Registrant Country'] as string,
-		email: entries['Registrant Email'] as string,
-		telephone: entries['Registrant Phone'] as string,
-		telephoneExt: entries['Registrant Phone Ext'] as string,
-		fax: entries['Registrant Fax'] as string,
-		faxExt: entries['Registrant Fax Ext'] as string,
+		name: entries["Registrant Name"] as string,
+		organization: entries["Registrant Organization"] as string,
+		street1: entries["Registrant Street"] as string,
+		city: entries["Registrant City"] as string,
+		state: entries["Registrant State/Province"] as string,
+		postalCode: entries["Registrant Postal Code"] as string,
+		countryCode: entries["Registrant Country"] as string,
+		email: entries["Registrant Email"] as string,
+		telephone: entries["Registrant Phone"] as string,
+		telephoneExt: entries["Registrant Phone Ext"] as string,
+		fax: entries["Registrant Fax"] as string,
+		faxExt: entries["Registrant Fax Ext"] as string,
 	};
 
 	record.admin = {
-		name: entries['Admin Name'] as string,
-		organization: entries['Admin Organization'] as string,
-		street1: entries['Admin Street'] as string,
-		city: entries['Admin City'] as string,
-		state: entries['Admin State/Province'] as string,
-		postalCode: entries['Admin Postal Code'] as string,
-		countryCode: entries['Admin Country'] as string,
-		email: entries['Admin Email'] as string,
-		telephone: entries['Admin Phone'] as string,
-		telephoneExt: entries['Admin Phone Ext'] as string,
-		fax: entries['Admin Fax'] as string,
-		faxExt: entries['Admin Fax Ext'] as string,
+		name: entries["Admin Name"] as string,
+		organization: entries["Admin Organization"] as string,
+		street1: entries["Admin Street"] as string,
+		city: entries["Admin City"] as string,
+		state: entries["Admin State/Province"] as string,
+		postalCode: entries["Admin Postal Code"] as string,
+		countryCode: entries["Admin Country"] as string,
+		email: entries["Admin Email"] as string,
+		telephone: entries["Admin Phone"] as string,
+		telephoneExt: entries["Admin Phone Ext"] as string,
+		fax: entries["Admin Fax"] as string,
+		faxExt: entries["Admin Fax Ext"] as string,
 	};
 
 	record.admin = {
-		name: entries['Tech Name'] as string,
-		organization: entries['Tech Organization'] as string,
-		street1: entries['Tech Street'] as string,
-		city: entries['Tech City'] as string,
-		state: entries['Tech State/Province'] as string,
-		postalCode: entries['Tech Postal Code'] as string,
-		countryCode: entries['Tech Country'] as string,
-		email: entries['Tech Email'] as string,
-		telephone: entries['Tech Phone'] as string,
-		telephoneExt: entries['Tech Phone Ext'] as string,
-		fax: entries['Tech Fax'] as string,
-		faxExt: entries['Tech Fax Ext'] as string,
+		name: entries["Tech Name"] as string,
+		organization: entries["Tech Organization"] as string,
+		street1: entries["Tech Street"] as string,
+		city: entries["Tech City"] as string,
+		state: entries["Tech State/Province"] as string,
+		postalCode: entries["Tech Postal Code"] as string,
+		countryCode: entries["Tech Country"] as string,
+		email: entries["Tech Email"] as string,
+		telephone: entries["Tech Phone"] as string,
+		telephoneExt: entries["Tech Phone Ext"] as string,
+		fax: entries["Tech Fax"] as string,
+		faxExt: entries["Tech Fax Ext"] as string,
 	};
 
 	if (typeof entries["Domain Name"] === "string") {

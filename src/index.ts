@@ -1,5 +1,3 @@
-import { Client } from "./client";
-
 export * from "./client";
 
 export async function getAllTlds(): Promise<string[]> {
@@ -13,6 +11,3 @@ export async function getAllTlds(): Promise<string[]> {
 		.filter((line) => !!line && !line.startsWith("#"))
 		.map((line) => line.trim().toLowerCase());
 }
-
-const client = new Client();
-client.lookup("microsoft.com").then((record) => console.log(record));

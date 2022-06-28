@@ -42,6 +42,7 @@ const parse: WhoisParser = (raw: string): WhoisRecord | null => {
 
 	if (raw.match(/^No match for/)) {
 		record.status = "available";
+		record.domainAvailability = true;
 		return record;
 	} else {
 		record.status = "registered";
