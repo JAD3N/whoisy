@@ -71,7 +71,11 @@ export function parse(raw: string): WhoisRecord | null {
 					}
 				}
 			}
-		} else if (entity.roles.includes("registrant") || entity.roles.includes("technical") || entity.roles.includes("administrative")) {
+		} else if (
+			entity.roles.includes("registrant") ||
+			entity.roles.includes("technical") ||
+			entity.roles.includes("administrative")
+		) {
 			const contact: Contact = {};
 
 			if (entity.vcardArray[0] === "vcard") {
@@ -120,7 +124,7 @@ export function parse(raw: string): WhoisRecord | null {
 		record.domainNameExt = parsedDomain.tld || undefined;
 	}
 
-	record.domainAvailability = record.status === 'available';
+	record.domainAvailability = record.status === "available";
 	return record;
 }
 

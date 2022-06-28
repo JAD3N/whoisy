@@ -4,9 +4,6 @@ import fetch from "node-fetch";
 
 import { parse } from "./parsers";
 import { WhoisRecord } from "./record";
-import { parseISO } from "date-fns";
-import { Nameserver } from "./nameserver";
-import ipRegex from "ip-regex";
 
 export type Tld = string;
 export type WhoisServer = string;
@@ -87,14 +84,13 @@ export class Client {
 			try {
 				rdapJSON = await this.rdap(domain);
 			} catch (err: unknown) {
-				console.error('RDAP Error:', err);
+				console.error("RDAP Error:", err);
 			}
 
 			if (rdapJSON) {
 				return parse("rdap", rdapJSON);
 			}
 		}
-
 
 		if (!host && this.tldCache.has(domainTld)) {
 			host = this.tldCache.get(domainTld);
