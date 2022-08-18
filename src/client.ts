@@ -1,6 +1,8 @@
 import net from "net";
 import punycode from "punycode/";
 import fetch from "node-fetch";
+import psl from "psl";
+import whoisPatches from './patches/whois.json';
 
 import { parse } from "./parsers";
 import { WhoisRecord } from "./record";
@@ -16,6 +18,10 @@ export class Client {
 	public constructor() {
 		this.whoisTldCache = new Map();
 		this.rdapTldCache = new Map();
+
+		for (const [tld, whoisServer] of Object.entries(whoisPatches)) {
+			this.whoisTldCache.set(tld, whoisServer);
+		}
 	}
 
 	private whois({
@@ -107,7 +113,13 @@ export class Client {
 		} = {}
 	): Promise<WhoisRecord | null> {
 		domain = punycode.toASCII(domain);
-		const domainTld = domain.slice(domain.lastIndexOf(".") + 1);
+
+		// extract tld
+		let domainTld = domain.slice(domain.lastIndexOf(".") + 1);
+		const parsed = psl.parse(domain);
+		if ('tld' in parsed && parsed.tld) {
+			domainTld = parsed.tld;
+		}
 
 		if (this.rdapTldCache.size === 0) {
 			await this.updateRdapCache();

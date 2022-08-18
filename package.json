@@ -1,6 +1,6 @@
 {
 	"name": "whoisy",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "",
 	"keywords": [
 		"whois",
@@ -15,6 +15,7 @@
 	"types": "./build/index.d.ts",
 	"license": "UNLICENSED",
 	"scripts": {
+		"patches": "node -r ./esbuild-hook ./scripts/patches",
 		"build": "yarpm run clean && yarpm run ts:typings && yarpm run ts:build",
 		"clean": "node -r ./esbuild-hook ./scripts/clean",
 		"ts:typings": "tsc --emitDeclarationOnly",
